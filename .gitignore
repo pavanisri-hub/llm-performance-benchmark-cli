@@ -1,0 +1,44 @@
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Test and coverage output
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Hugging Face and model cache
+hf_cache/
+huggingface_cache/
+.cache/huggingface/
+
+# Generated benchmark outputs
+outputs/*
+!outputs/.gitkeep
+
+# Generated local benchmark artifacts
+results.csv
+*.log
+
+# Python packaging artifacts
+build/
+dist/
+*.egg-info/
