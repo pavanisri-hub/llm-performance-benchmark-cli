@@ -1,0 +1,29 @@
+# Hugging Face models to benchmark.
+# Keep at least three distinct model IDs, as required by the assignment.
+models:
+  - distilgpt2
+  - gpt2
+  - EleutherAI/pythia-160m
+
+# Path is relative to the repository root when the CLI is run locally.
+dataset_path: datasets/sample_prompts.jsonl
+
+# Maximum number of tokens generated for each prompt.
+max_new_tokens: 30
+
+# Number of prompt generations used to warm up each loaded model.
+# Warm-up results are intentionally excluded from CSV and summary metrics.
+warmup_prompts: 1
+
+# Outputs are saved into this directory unless --output-dir is supplied.
+output_dir: outputs
+
+# An output is considered degenerate when it has fewer than this many
+# newly generated tokens, or when its decoded text is empty.
+min_output_tokens: 3
+
+# Deterministic generation is preferable for reproducible performance runs.
+generation:
+  do_sample: false
+  use_cache: true
+  repetition_penalty: 1.0
