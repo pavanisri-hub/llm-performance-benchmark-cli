@@ -1,0 +1,6 @@
+{"id": "prompt_001", "prompt": "Explain the difference between supervised learning and unsupervised learning in simple terms."}
+{"id": "prompt_002", "prompt": "Write a short Python function that returns the factorial of a non-negative integer."}
+{"id": "prompt_003", "prompt": "List three practical ways a software team can reduce production deployment risk."}
+{"id": "prompt_004", "prompt": "Summarize why monitoring RAM and GPU memory matters when serving large language models."}
+{"id": "prompt_005", "prompt": "Draft a concise status update for a project that has completed testing and is ready for release."}
+{"id": "prompt_006", "prompt": "Describe one advantage and one limitation of using Docker for machine learning applications."}
