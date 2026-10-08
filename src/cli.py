@@ -87,15 +87,15 @@ def run_benchmark(config_path: str) -> int:
 
         print("\n=== Benchmark Summary ===")
         for model_result in report.models:
-            print(f"\nModel: {model_result['model_id']}")
-            print(f"  Device: {model_result['device']}")
-            print(f"  Total prompts: {model_result['total_prompts']}")
-            print(f"  Mean latency: {model_result['mean_latency']:.3f} s")
-            print(f"  Median latency: {model_result['median_latency']:.3f} s")
-            print(f"  P95 latency: {model_result['p95_latency']:.3f} s")
-            print(f"  Min latency: {model_result['min_latency']:.3f} s")
-            print(f"  Max latency: {model_result['max_latency']:.3f} s")
-            print(f"  Mean tokens/second: {model_result['mean_tokens_per_second']:.2f}")
+            print(f"\nModel: {model_result.model_id}")
+            print(f"  Device: {model_result.device}")
+            print(f"  Total prompts: {model_result.total_prompts}")
+            print(f"  Mean latency: {model_result.mean_latency:.3f} s")
+            print(f"  Median latency: {model_result.median_latency:.3f} s")
+            print(f"  P95 latency: {model_result.p95_latency:.3f} s")
+            print(f"  Min latency: {model_result.min_latency:.3f} s")
+            print(f"  Max latency: {model_result.max_latency:.3f} s")
+            print(f"  Mean tokens/second: {model_result.mean_tokens_per_second:.2f}")
 
         return 0
 

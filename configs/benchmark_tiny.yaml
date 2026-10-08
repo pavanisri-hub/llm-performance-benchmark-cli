@@ -1,0 +1,9 @@
+models:
+  - hf-internal-testing/tiny-random-GPTNeoXForCausalLM
+  - hf-internal-testing/tiny-random-gpt2
+  - hf-internal-testing/tiny-random-BloomForCausalLM
+
+dataset_path: datasets/sample_prompts.jsonl
+output_dir: outputs
+max_new_tokens: 30
+warmup_prompts: 1

@@ -14,7 +14,7 @@ from typing import Any
 import psutil
 
 from config_parser import BenchmarkConfig
-from dataset_loader import Prompt
+from dataset_loader import PromptRecord
 from model_runner import HuggingFaceRunner, InferenceError
 
 logger = logging.getLogger(__name__)
@@ -148,7 +148,7 @@ class BenchmarkOrchestrator:
             "python_version": f"{__import__('sys').version_info.major}.{__import__('sys').version_info.minor}.{__import__('sys').version_info.micro}",
         }
 
-    def _run_model_benchmark(self, model_id: str, prompts: list[Prompt]) -> ModelResult:
+    def _run_model_benchmark(self, model_id: str, prompts: list[PromptRecord]) -> ModelResult:
         """Run benchmark for a single model."""
         logger.info("Starting benchmark for model %s", model_id)
 
@@ -163,22 +163,22 @@ class BenchmarkOrchestrator:
             logger.info("Running %d warm-up prompts for %s", warmup_count, model_id)
             for i in range(warmup_count):
                 try:
-                    runner.generate(prompts[i].text)
+                    runner.generate(prompts[i].prompt)
                 except InferenceError as error:
                     logger.warning("Warm-up failed for %s: %s", model_id, error)
 
             # Benchmark phase
             logger.info("Running %d benchmark prompts for %s", len(prompts), model_id)
-            for prompt in prompts:
+            for prompt_record in prompts:
                 start_time = time.perf_counter()
-                generated_tokens = runner.generate(prompt.text)
+                generated_tokens = runner.generate(prompt_record.prompt)
                 latency = time.perf_counter() - start_time
 
                 tokens_per_second = generated_tokens / latency if latency > 0 else 0.0
 
                 prompt_result = PromptResult(
-                    prompt_id=prompt.prompt_id,
-                    prompt_length=len(prompt.text.split()),
+                    prompt_id=prompt_record.prompt_id,
+                    prompt_length=len(prompt_record.prompt.split()),
                     generated_tokens=generated_tokens,
                     latency_seconds=latency,
                     tokens_per_second=tokens_per_second,
@@ -186,7 +186,7 @@ class BenchmarkOrchestrator:
                 result.prompt_results.append(prompt_result)
                 logger.info(
                     "Prompt %s: %d tokens, %.3f s, %.2f tokens/s",
-                    prompt.prompt_id,
+                    prompt_record.prompt_id,
                     generated_tokens,
                     latency,
                     tokens_per_second,
