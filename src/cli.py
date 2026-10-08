@@ -6,8 +6,10 @@ import argparse
 import sys
 from pathlib import Path
 
+from benchmark import BenchmarkOrchestrator
 from config_parser import ConfigurationError, load_config
 from dataset_loader import DatasetError, load_prompts
+from visualization import generate_visualizations
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -23,6 +25,11 @@ def build_parser() -> argparse.ArgumentParser:
         required=True,
         metavar="PATH",
         help="Path to a YAML or JSON benchmark configuration file.",
+    )
+    parser.add_argument(
+        "--run",
+        action="store_true",
+        help="Run the full benchmark pipeline (default: preflight only).",
     )
     return parser
 
@@ -50,11 +57,62 @@ def run_preflight(config_path: str) -> int:
     return 0
 
 
+def run_benchmark(config_path: str) -> int:
+    """Run the full benchmark pipeline."""
+    try:
+        config = load_config(config_path)
+    except ConfigurationError as error:
+        print(f"Configuration error: {error}", file=sys.stderr)
+        return 2
+
+    config_path_obj = Path(config_path).resolve()
+    orchestrator = BenchmarkOrchestrator(config, config_path_obj)
+
+    print("Starting full benchmark pipeline...")
+    print(f"Models: {len(config.models)}")
+    print(f"Dataset: {config.dataset_path}")
+    print(f"Output directory: {config.output_dir}")
+
+    try:
+        report = orchestrator.run()
+        report_path = orchestrator.save_report(config.output_dir)
+
+        print("\nBenchmark completed successfully.")
+        print(f"Report saved to: {report_path}")
+
+        print("\nGenerating visualizations...")
+        chart_paths = generate_visualizations(report_path, config.output_dir)
+        for chart_path in chart_paths:
+            print(f"  - {chart_path}")
+
+        print("\n=== Benchmark Summary ===")
+        for model_result in report.models:
+            print(f"\nModel: {model_result['model_id']}")
+            print(f"  Device: {model_result['device']}")
+            print(f"  Total prompts: {model_result['total_prompts']}")
+            print(f"  Mean latency: {model_result['mean_latency']:.3f} s")
+            print(f"  Median latency: {model_result['median_latency']:.3f} s")
+            print(f"  P95 latency: {model_result['p95_latency']:.3f} s")
+            print(f"  Min latency: {model_result['min_latency']:.3f} s")
+            print(f"  Max latency: {model_result['max_latency']:.3f} s")
+            print(f"  Mean tokens/second: {model_result['mean_tokens_per_second']:.2f}")
+
+        return 0
+
+    except Exception as error:
+        print(f"Benchmark failed: {error}", file=sys.stderr)
+        return 1
+
+
 def main() -> int:
-    """Run CLI argument parsing and benchmark preflight validation."""
+    """Run CLI argument parsing and benchmark execution."""
     parser = build_parser()
     args = parser.parse_args()
-    return run_preflight(args.config)
+
+    if args.run:
+        return run_benchmark(args.config)
+    else:
+        return run_preflight(args.config)
 
 
 if __name__ == "__main__":
